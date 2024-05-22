@@ -30,78 +30,81 @@ import tf_slim
 class ResolutionSchedule(object):
   """Image resolution upscaling schedule."""
 
-  def __init__(self,
-               scale_mode='ALL',
-               start_resolutions=(4, 4),
-               scale_base=2,
-               num_resolutions=4):
-    """Initializer.
+    def __init__(
+        self,
+        scale_mode = 'ALL',
+        start_resolutions = (4, 4),
+        scale_base = 2,
+        num_resolutions = 4
+    ):
+        """Initializer.
 
-    Args:
-      scale_mode: 'ALL' (along both H and W) or 'H' (along H).
-      start_resolutions: An tuple of integers of HxW format for start image
-      resolutions. Defaults to (4, 4).
-      scale_base: An integer of resolution base multiplier. Defaults to 2.
-      num_resolutions: An integer of how many progressive resolutions (including
-          `start_resolutions`). Defaults to 4.
-    """
-    self._scale_mode = scale_mode
-    self._start_resolutions = start_resolutions
-    self._scale_base = scale_base
-    self._num_resolutions = num_resolutions
+        Args:
+          scale_mode: 'ALL' (along both H and W) or 'H' (along H).
+          start_resolutions: An tuple of integers of HxW format for start image
+          resolutions. Defaults to (4, 4).
+          scale_base: An integer of resolution base multiplier. Defaults to 2.
+          num_resolutions: An integer of how many progressive resolutions (including
+              `start_resolutions`). Defaults to 4.
+        """
+        self._scale_mode = scale_mode
+        self._start_resolutions = start_resolutions
+        self._scale_base = scale_base
+        self._num_resolutions = num_resolutions
 
-  @property
-  def scale_mode(self):
-    return self._scale_mode
 
-  @property
-  def start_resolutions(self):
-    return tuple(self._start_resolutions)
+    @property
+    def scale_mode(self):
+        return self._scale_mode
 
-  @property
-  def scale_base(self):
-    return self._scale_base
+    @property
+    def start_resolutions(self):
+        return tuple(self._start_resolutions)
 
-  @property
-  def num_resolutions(self):
-    return self._num_resolutions
+    @property
+    def scale_base(self):
+        return self._scale_base
 
-  def _raise_unsupported_scale_mode_error(self):
-    raise ValueError('Unsupported scale mode: {}'.format(self._scale_mode))
+    @property
+    def num_resolutions(self):
+        return self._num_resolutions
 
-  @property
-  def final_resolutions(self):
-    """Returns the final resolutions."""
-    if self._scale_mode == 'ALL':
-      return tuple(r * self.scale_factor(1) for r in self._start_resolutions)
-    elif self._scale_mode == 'H':
-      return tuple([self._start_resolutions[0] * self.scale_factor(1)] +
-                   list(self._start_resolutions[1:]))
-    else:
-      self._raise_unsupported_scale_mode_error()
+    def _raise_unsupported_scale_mode_error(self):
+        raise ValueError('Unsupported scale mode: {}'.format(self._scale_mode))
 
-  def upscale(self, images, scale):
-    if self._scale_mode == 'ALL':
-      return layers.upscale(images, scale)
-    elif self._scale_mode == 'H':
-      return layers.upscale_height(images, scale)
-    else:
-      self._raise_unsupported_scale_mode_error()
+    @property
+    def final_resolutions(self):
+        """Returns the final resolutions."""
+        if self._scale_mode == 'ALL':
+          return tuple(r * self.scale_factor(1) for r in self._start_resolutions)
+        elif self._scale_mode == 'H':
+          return tuple([self._start_resolutions[0] * self.scale_factor(1)] +
+                       list(self._start_resolutions[1:]))
+        else:
+          self._raise_unsupported_scale_mode_error()
 
-  def downscale(self, images, scale):
-    if self._scale_mode == 'ALL':
-      return layers.downscale(images, scale)
-    elif self._scale_mode == 'H':
-      return layers.downscale_height(images, scale)
-    else:
-      self._raise_unsupported_scale_mode_error()
+    def upscale(self, images, scale):
+        if self._scale_mode == 'ALL':
+          return layers.upscale(images, scale)
+        elif self._scale_mode == 'H':
+          return layers.upscale_height(images, scale)
+        else:
+          self._raise_unsupported_scale_mode_error()
 
-  def scale_factor(self, block_id):
-    """Returns the scale factor for network block `block_id`."""
-    if block_id < 1 or block_id > self._num_resolutions:
-      raise ValueError('`block_id` must be in [1, {}]'.format(
-          self._num_resolutions))
-    return self._scale_base**(self._num_resolutions - block_id)
+    def downscale(self, images, scale):
+        if self._scale_mode == 'ALL':
+          return layers.downscale(images, scale)
+        elif self._scale_mode == 'H':
+          return layers.downscale_height(images, scale)
+        else:
+          self._raise_unsupported_scale_mode_error()
+
+    def scale_factor(self, block_id):
+        """Returns the scale factor for network block `block_id`."""
+        if block_id < 1 or block_id > self._num_resolutions:
+          raise ValueError('`block_id` must be in [1, {}]'.format(
+              self._num_resolutions))
+        return self._scale_base**(self._num_resolutions - block_id)
 
 
 def block_name(block_id):

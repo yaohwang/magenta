@@ -117,4 +117,5 @@ def parse_config_str(config_str):
 
 
 def expand_path(path):
-  return os.path.abspath(os.path.expandvars(os.path.expanduser(path)))
+    # NOTE: √, expandvars fro $name or $(name) like env vars
+    return os.path.abspath(os.path.expandvars(os.path.expanduser(path)))

@@ -39,6 +39,7 @@ hparams['save_summaries_num_images'] = 10*1000
 hparams['batch_size_schedule'] = [8]
 
 # Network
+# TODO:
 hparams['fmap_base'] = 4096
 hparams['fmap_decay'] = 1.0
 hparams['fmap_max'] = 256
@@ -55,6 +56,7 @@ hparams['discriminator_ac_loss_weight'] = 10.0
 hparams['gen_gl_consistency_loss_weight'] = 0.0
 
 # STFT specific
+# TODO:
 hparams['dataset_name'] = 'nsynth_tfds'
 hparams['g_fn'] = 'specgram'
 hparams['d_fn'] = 'specgram'
